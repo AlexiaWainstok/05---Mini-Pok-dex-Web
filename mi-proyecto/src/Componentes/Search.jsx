@@ -1,5 +1,4 @@
 import { useState } from "react";
-<div className="search-box"></div>
 export default function Search({ onSearch }) {
   const [input, setInput] = useState("");
 
@@ -9,14 +8,13 @@ export default function Search({ onSearch }) {
   };
 
   return (
-    <div>
+    <div className="search-box">
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Nombre o ID"
+        placeholder="Nombre o tipo"
       />
       <button onClick={handleSearch}>Buscar</button>
     </div>
   );
-  
 }

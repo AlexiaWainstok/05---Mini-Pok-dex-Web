@@ -1,35 +1,28 @@
-import { useEffect, useState } from "react";
-import { getPokemonList } from "../services/api";
+export default function PokemonList({ list }) {
+  if (!list || list.length === 0) return null;
 
-export default function PokemonList() {
-  const [list, setList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  return (
+    <div className="lista-wrapper">
+      <h2>Resultados</h2>
 
-  useEffect(() => {
-    const fetchList = async () => {
-      setLoading(true);
-      try {
-        const data = await getPokemonList(20);
-        setList(data.results);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      <div className="grid">
+        {list.map((p, i) => (
+          <div className="card" key={i}>
+            <h2>{p.name}</h2>
 
-    fetchList();
-  }, []);
+            <img
+              src={p.sprites?.front_default}
+              alt={p.name}
+            />
 
-  if (loading) return <p>Cargando lista...</p>;
-
-  <h2>Lista</h2>
-   return (
-    <ul>
-      {list.map((p, i) => (
-        <li key={i}>{p.name}</li>
-      ))}
-    </ul>
+            <p>
+              Tipos: {p.types?.map(t => t.type.name).join(", ")}
+            </p>
+            <p>Peso: {p.weight}</p>
+            <p>Altura: {p.height}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
-
 }
