@@ -1,83 +1,80 @@
-import { useState, useEffect } from "react";
-import Search from "./Componentes/Search";
-import PokemonCard from "./Componentes/PokemonCard";
-import PokemonList from "./Componentes/PokemonList";
-import { getPokemon, getPokemonByType, getPokemonList } from "./services/api";
+import { useState, useEffect } from "react"; // hooks para estado y efectos
+import Search from "./Componentes/Search"; // componente buscador
+import PokemonCard from "./Componentes/PokemonCard"; // componente para 1 pokemon
+import PokemonList from "./Componentes/PokemonList"; // componente para lista
+import { getPokemon, getPokemonByType, getPokemonList } from "./services/api"; // funciones para API
 
 function App() {
-  const [pokemon, setPokemon] = useState(null);
-  const [list, setList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [pokemon, setPokemon] = useState(null); 
+  const [list, setList] = useState([]); 
+  const [loading, setLoading] = useState(false); // estado de carga
+  const [error, setError] = useState(""); 
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchInitial = async () => {
       try {
-        const data = await getPokemonList(10);
+        const data = await getPokemonList(10); 
 
-        const pokemons = await Promise.all(
-          data.results.map(async (p) => {
-            const res = await fetch(p.url);
-            return res.json();
+        const pokemons = await Promise.all( // espera las peticiones todas
+          data.results.map(async (p) => { // recorre cada pokemon
+            const res = await fetch(p.url); // pide info completa
+            return res.json(); 
           })
         );
 
-        setList(pokemons);
+        setList(pokemons); // guarda la lista en el estado
       } catch (err) {
-        console.error(err);
+        console.error(err); // muestra error en consola
       }
     };
 
-    fetchInitial();
-  }, []);
+    fetchInitial(); // ejecuta la función
+  }, []); // [] = solo se ejecuta una vez
 
-  const handleSearch = async (value) => {
-    setLoading(true);
-    setError("");
-    setPokemon(null);
-    setList([]);
+  const handleSearch = async (value) => { // función de búsqueda
+    setLoading(true); // activa loading
+    setError(""); // limpia errores
+    setPokemon(null); // limpia pokemon individual
+    setList([]); // limpia lista
 
     try {
-  
-      const data = await getPokemon(value);
-      setPokemon(data);
-      setList([]);
+      const data = await getPokemon(value); // busca por nombre
+      setPokemon(data); // guarda el pokemon encontrado
+      setList([]); // limpia lista
     } catch {
       try {
+        const data = await getPokemonByType(value); // busca por tipo
 
-        const data = await getPokemonByType(value);
-
-        const pokemons = await Promise.all(
-          data.pokemon.slice(0, 12).map(async (p) => {
-            const res = await fetch(p.pokemon.url);
+        const pokemons = await Promise.all( // obtiene info completa
+          data.pokemon.slice(0, 12).map(async (p) => { // limita a 12
+            const res = await fetch(p.pokemon.url); // fetch de cada uno
             return res.json();
           })
         );
 
-        setList(pokemons);
-        setPokemon(null);
+        setList(pokemons); 
+        setPokemon(null); // limpia pokemon individual
       } catch {
-        setError("No se encontró el Pokémon o tipo");
+        setError("No se encontró el Pokémon o tipo"); 
       }
     } finally {
-      setLoading(false);
+      setLoading(false); // termina loading
     }
   };
 
   return (
-    <div className="container">
+    <div className="container"> 
       <h1>Mini Pokédex</h1>
 
-      <Search onSearch={handleSearch} />
+      <Search onSearch={handleSearch} /> {/* buscador */}
 
-      {loading && <p className="loading">Cargando Pokémon...</p>}
+      {loading && <p className="loading">Cargando Pokémon...</p>} {/* mensaje carga */}
       {error && <p className="error">{error}</p>}
 
-     
-      {!loading && pokemon && <PokemonCard pokemon={pokemon} />}
-      {!loading && list.length > 0 && <PokemonList list={list} />}
+      {!loading && pokemon && <PokemonCard pokemon={pokemon} />} {/* muestra 1 pokemon */}
+      {!loading && list.length > 0 && <PokemonList list={list} />} {/* muestra lista */}
     </div>
   );
 }
 
-export default App;
+export default App; 
