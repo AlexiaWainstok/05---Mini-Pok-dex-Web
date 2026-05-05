@@ -11,7 +11,7 @@ export default function PokemonList({ list }) {
             <h2>{p.name}</h2>
 
             <img
-              src={p.sprites?.front_default}
+              src={p.sprites?.front_default} /*si existe, usalo; si no, no rompas */
               alt={p.name}
             />
 
